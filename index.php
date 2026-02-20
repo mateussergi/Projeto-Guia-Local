@@ -1,8 +1,10 @@
 <?php
 
+require __DIR__ .'/Converter.php';
+
+
 use app\CSVConverter;
 
-require __DIR__ .'/Converter.php';
 
 $comercios = [];
 
