@@ -49,16 +49,30 @@ foreach($fileContent as $content) {
     <h2>Comércios da Cidade</h2>
   </div>
   <div class = "center" >
+    
   <nav class = "categorias">
-    <h2>CATEGORIAS</h2>
+   <div class="topo">
+  <h2>CATEGORIAS</h2>
+  <div class="pesquisa">
+    <input type="text"  id="pesquisa" name="pesquisa" placeholder="Pesquisar..." onkeyup="pesquisar()">
+  </div>
+</div>
     <nav>
-      <a class = "todos">Todos</a>
-      <a>Restaurantes</a>
-      <a>Farmácias</a>
-      <a>Lojas</a>
-      <a>Serviços</a>
-      <a>Supermercados</a>
-      <a>...</a>
+      <a href="#" class="todos" onclick="filtro('todos', this); return false;">Todos</a>
+      <a href="#" onclick="filtro('restaurante', this);return false;">Restaurantes</a>
+      <a href="#" onclick="filtro('farmácia', this);return false;">Farmácias</a>
+      <a href="#" onclick="filtro('loja', this);return false;">Lojas</a>
+      <a href="#" onclick="filtro('serviços', this);return false;">Serviços</a>
+      <a href="#" onclick="filtro('supermercado', this);return false;">Supermercados</a>
+      <a href="#" onclick="filtro('lanchonete', this);return false;">Lanchonetes</a>
+      <a href="#" onclick="filtro('hamburgueria', this);return false;">Hamburguerias</a>
+      <a href="#" onclick="filtro('sorveteria', this);return false;">Sorveterias</a>
+      <a href="#" onclick="filtro('pizzaria', this);return false;">Pizzarias</a>
+      <a href="#" onclick="filtro('escola', this);return false;">Escolas</a>
+      <a href="#" onclick="filtro('banco', this);return false;">Bancos</a>
+      <a href="#" onclick="filtro('saude', this);return false;">Saúde</a>
+      <a href="#" onclick="filtro('beleza', this);return false;">Beleza</a>
+      <a href="#" onclick="filtro('agro', this);return false;">Agro</a>
 
     </nav>
   </nav>
@@ -69,21 +83,69 @@ foreach($fileContent as $content) {
   
   foreach ($comercios as $key => $data) {
 
-    $categoria = ucfirst($data->categoria);
+    $categoria = strtolower($data->categoria);
     if($key > 0) {
-    
-        echo "<div class = 'container-single'>";
+        echo "<div class = 'container-single' data-categoria='{$categoria}'>";
         echo  "<h2> {$data->nome} </h2>";
+        $categoria = ucfirst($data->categoria);
         echo  "<h3>{$categoria}</h3>";
         echo  "<hr>";
-        echo "<p><br><a href = '{$data->link}' class = 'botao' target = '_blank'>Acessar Site</a><br><br>{$data->endereco}<br>{$data->telefone} <br>{$data->horario}</p>";
+        if (trim(!empty($data->link)) && trim($data->link)!="#"){
+        echo "<p><br><a href = '{$data->link}' class = 'botao' target = '_blank'>Acessar Site</a></p>";
+        }
+        echo "<p><br><br>{$data->endereco}<br></p>";
+        if (trim(!empty($data->telefone)) && trim($data->telefone)!="#"){
+        echo "<p>{$data->telefone}</p>";
+        }
+        else{
+          echo"<p>Telefone indisponível</p>";
+        }
+        if (trim(!empty($data->horario)) && trim($data->horario)!="#"){
+        echo "<p>{$data->horario}</p>";
+        }
+        else{
+          echo"<p>Horário indisponível</p>";
+        }
       echo "</div>";
-
+      
     }
   }
 
   ?>
   </div>
+
+  <script>
+    function filtro(categoria, el, event) {
+      if(event) event.preventDefault(); // previne scroll
+          const cards = document.querySelectorAll(".container-single");
+          const links = document.querySelectorAll(".categorias nav a");
+
+     cards.forEach(card => {
+         const cat = card.getAttribute("data-categoria");
+         card.style.display = (categoria === "todos" || cat === categoria) ? "block" : "none";
+        });
+
+     links.forEach(link => link.classList.remove("ativo"));
+     el.classList.add("ativo");
+  }
+
+     function pesquisar(){
+        const texto = document.getElementById("pesquisa").value.toLowerCase();
+        const cards = document.querySelectorAll(".container-single");
+
+     cards.forEach(card=>{
+        const nome = card.querySelector("h2").innerText.toLowerCase();
+
+     if (nome.includes(texto)){
+        card.style.display = "block";
+    } else {
+          card.style.display = "none";
+          }
+    });
+  }
+  </script>
+
+
 </body>
 <footer class = "footer">
   <p>© 2026 Guia Local - Novo Cruzeiro. Todos os direitos reservados.</p>
