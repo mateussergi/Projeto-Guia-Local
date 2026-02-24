@@ -73,6 +73,7 @@ foreach($fileContent as $content) {
       <a href="#" onclick="filtro('saude', this);return false;">Saúde</a>
       <a href="#" onclick="filtro('beleza', this);return false;">Beleza</a>
       <a href="#" onclick="filtro('agro', this);return false;">Agro</a>
+      <a href="#" onclick="filtro('mercado', this);return false;">Mercado</a>
 
     </nav>
   </nav>
