@@ -1,9 +1,26 @@
 <?php
 
+
+  $caminho = __DIR__ . '/estabelecimentos.db';
+  $db = new PDO ("sqlite:{$caminho}");
+  $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+  $tipoFiltro = $_GET['tipo'] ?? '';
+
+  $tipos = ['Restaurante', 'Farmácia', 'Supermercado','Loja', 'Serviço','Lanchonete','Hamburgueria','Bar','Sorveteria','Pizzaria','Escola','Banco','Saude','Beleza','Agro','Mercado','Tecnologia'];
+
+  if ($tipoFiltro && in_array($tipoFiltro, $tipos)) {
+    $stmt = $db->prepare("SELECT * FROM estabelecimentos WHERE tipo = :tipo ORDER BY nome");
+    $stmt->execute([':tipo' => $tipoFiltro]);
+    $estabelecimentos = $stmt->fetchAll();
+} else {
+    $estabelecimentos = $db->query("SELECT * FROM estabelecimentos ORDER BY tipo, nome")->fetchAll();
+}
+
 require __DIR__ .'/Converter.php';
 
-
-use app\CSVConverter;
+  use app\CSVConverter;
 
 
 $comercios = [];
@@ -31,7 +48,6 @@ foreach($fileContent as $content) {
 }
 
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,62 +73,41 @@ foreach($fileContent as $content) {
     <input type="text"  id="pesquisa" name="pesquisa" placeholder="Pesquisar..." onkeyup="pesquisar()">
   </div>
 </div>
-    <nav>
-      <a href="#" class="todos" onclick="filtro('todos', this); return false;">Todos</a>
-      <a href="#" onclick="filtro('restaurante', this);return false;">Restaurantes</a>
-      <a href="#" onclick="filtro('farmácia', this);return false;">Farmácias</a>
-      <a href="#" onclick="filtro('loja', this);return false;">Lojas</a>
-      <a href="#" onclick="filtro('serviços', this);return false;">Serviços</a>
-      <a href="#" onclick="filtro('supermercado', this);return false;">Supermercados</a>
-      <a href="#" onclick="filtro('lanchonete', this);return false;">Lanchonetes</a>
-      <a href="#" onclick="filtro('hamburgueria', this);return false;">Hamburguerias</a>
-      <a href="#" onclick="filtro('sorveteria', this);return false;">Sorveterias</a>
-      <a href="#" onclick="filtro('pizzaria', this);return false;">Pizzarias</a>
-      <a href="#" onclick="filtro('escola', this);return false;">Escolas</a>
-      <a href="#" onclick="filtro('banco', this);return false;">Bancos</a>
-      <a href="#" onclick="filtro('saude', this);return false;">Saúde</a>
-      <a href="#" onclick="filtro('beleza', this);return false;">Beleza</a>
-      <a href="#" onclick="filtro('agro', this);return false;">Agro</a>
-      <a href="#" onclick="filtro('mercado', this);return false;">Mercado</a>
-
-    </nav>
-  </nav>
+<nav class="filtros">
+    <a href="?" <?php echo !$tipoFiltro ? 'class="ativo"' : '' ?>>Todos</a>
+    <?php foreach ($tipos as $tipo): ?>
+        <a href="?tipo=<?php echo urlencode($tipo); ?>" <?php echo $tipoFiltro === $tipo ? 'class="ativo"' : ''; ?>>
+            <?php echo $tipo; ?>
+        </a>
+    <?php endforeach ?>
+</nav>
   </div>
   <div class = "container">
-
-  <?php
-  
-  foreach ($comercios as $key => $data) {
-
-    $categoria = strtolower($data->categoria);
-    if($key > 0) {
-        echo "<div class = 'container-single' data-categoria='{$categoria}'>";
-        echo  "<h2> {$data->nome} </h2>";
-        $categoria = ucfirst($data->categoria);
-        echo  "<h3>{$categoria}</h3>";
-        echo  "<hr>";
-        if (trim(!empty($data->link)) && trim($data->link)!="#"){
-        echo "<p><br><a href = '{$data->link}' class = 'botao' target = '_blank'>Acessar Site</a></p>";
-        }
-        echo "<p><br><br>{$data->endereco}<br></p>";
-        if (trim(!empty($data->telefone)) && trim($data->telefone)!="#"){
-        echo "<p>{$data->telefone}</p>";
-        }
-        else{
-          echo"<p>Telefone indisponível</p>";
-        }
-        if (trim(!empty($data->horario)) && trim($data->horario)!="#"){
-        echo "<p>{$data->horario}</p>";
-        }
-        else{
-          echo"<p>Horário indisponível</p>";
-        }
-      echo "</div>";
-      
-    }
-  }
-
-  ?>
+ <?php if (empty($estabelecimentos)): ?>
+        <p class="vazio">Nenhum estabelecimento encontrado.</p>
+    <?php else: ?>
+        <?php foreach ($estabelecimentos as $estabelecimento): ?>
+            <div class="container-single">
+                <div class="card-header">
+                    <h2><?php echo $estabelecimento['nome']; ?></h2>
+                    <br>
+                <span class="badge"><?php echo $estabelecimento['tipo']; ?></span>
+                <hr>
+                </div>
+                <?php if ($estabelecimento['link']&& trim($estabelecimento['link'])!="#"): ?>
+                    <a href="<?php echo $estabelecimento['link']; ?>" target="_blank" class="botao">Acessar o site</a>
+                        <?php endif ?>
+                
+                <p class="info"><br><?php echo $estabelecimento['endereco']; ?></p>
+                <?php if ($estabelecimento['telefone']): ?>
+                    <p class="info"><?php echo $estabelecimento['telefone']; ?></p>
+                <?php endif ?>
+                <?php if ($estabelecimento['horario']): ?>
+                    <p class="info"><?php echo $estabelecimento['horario']; ?></p>
+                <?php endif ?>
+            </div>
+        <?php endforeach ?>
+    <?php endif ?>
   </div>
 
   <script>

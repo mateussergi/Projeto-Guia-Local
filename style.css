@@ -82,12 +82,7 @@
   box-shadow: 5px 1px 15px #000000;
 }
 
-.ativo {
-  background-color: #521501;
-  color: #fad681;
-}
-
-.categorias nav a:hover{
+.categorias nav a:hover,.categorias nav a.ativo{
   background-color: #521501;
   color:#fad681;
   cursor:pointer;
@@ -137,17 +132,19 @@
   margin: 10px 0;
   box-shadow: 4px 2px 9px #000000;
 }
-.container-single h3{
-  margin-top: 10px;
+.badge{
+  margin-top: 5px;
   background-color:#fad681;
   color: #541900;
   border-radius: 15px;
   padding: 0 5px;
   width:max-content;
+  font-weight: 700;
 }
 
-.container-single p{
+.container-single .info{
   font-size: 20px;
+  font-family: "Inter", sans-serif;
 }
 
 .botao{
@@ -157,6 +154,7 @@
   border-radius: 13px;
   padding: 0 5px;
   width:max-content;
+  font-size: 20px;
   font-weight: 700;
   text-align: center;
 }
@@ -183,9 +181,10 @@
 
 @media (max-width:500px) {
   .container-single{
-  width: 48%;
+  width: 47%;
   height: auto;
 }
+
 }
 
 @media (max-width:500px) {

@@ -2,7 +2,7 @@
 
 try{
   $conn = new PDO ("sqlite:C:/laragon/www/guia_local/estabelecimentos.db");
-    echo"Conectado com sucesso!";
+    echo"Conectado!";
 }
 catch(PDOException $e){
   echo"Erro: " . $e->getmessage();
